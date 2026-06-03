@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>k2d — kiosk to digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Spline+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#13183a;--navy-deep:#0d1130;--ink:#13183a;--slate:#5a627e;--slate-light:#8b91a8;
+    --line:#e7e9f0;--line-soft:#eef0f5;--paper:#ffffff;--paper-alt:#f7f8fb;
+    --accent:#7b2ff7;--accent-2:#c026d3;--accent-soft:#f3edff;--radius:18px;--maxw:1120px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{font-family:'Spline Sans',-apple-system,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3,h4{font-family:'Archivo',sans-serif;letter-spacing:-0.02em;line-height:1.04}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  a{color:inherit;text-decoration:none}
+  .grad-text{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+  /* NAV */
+  nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.82);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--line-soft)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:72px}
+  .logo{font-family:'Archivo';font-weight:800;font-size:24px;letter-spacing:-0.04em;display:flex;align-items:center}
+  .logo .k{background:linear-gradient(120deg,var(--accent),var(--accent-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .logo small{font-family:'Spline Sans';font-size:11px;font-weight:600;color:var(--slate-light);letter-spacing:0.14em;text-transform:uppercase;margin-left:10px;align-self:center;border-left:1px solid var(--line);padding-left:10px}
+  .nav-right{display:flex;align-items:center;gap:30px}
+  .nav-links{display:flex;gap:30px;align-items:center}
+  .nav-links a{font-size:14.5px;font-weight:500;color:var(--slate);transition:color .2s}
+  .nav-links a:hover{color:var(--ink)}
+  .nav-cta{background:var(--ink);color:#fff !important;padding:11px 20px;border-radius:100px;font-weight:600;font-size:14px;transition:transform .2s,box-shadow .2s}
+  .nav-cta:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(19,24,58,.18)}
+  @media(max-width:860px){.nav-links a:not(.nav-cta){display:none}}
+
+  /* HERO */
+  .hero{position:relative;padding:104px 0 80px;overflow:hidden}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .eyebrow{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:600;letter-spacing:0.13em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:7px 14px;border-radius:100px;margin-bottom:26px}
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:linear-gradient(120deg,var(--accent),var(--accent-2))}
+  .hero h1{font-size:clamp(42px,5.6vw,76px);font-weight:800;margin-bottom:22px}
+  .hero p.lead{font-size:19px;color:var(--slate);max-width:530px;margin-bottom:32px}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:9px;padding:15px 28px;border-radius:100px;font-weight:600;font-size:15.5px;transition:transform .2s,box-shadow .2s;cursor:pointer;border:none}
+  .btn-primary{background:linear-gradient(120deg,var(--accent),var(--accent-2));color:#fff}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 34px rgba(123,47,247,.32)}
+  .btn .arrow{transition:transform .2s}
+  .btn:hover .arrow{transform:translateX(3px)}
+  .built-for{margin-top:26px;font-size:13.5px;color:var(--slate-light);max-width:480px;line-height:1.55}
+
+  /* DEVICE */
+  .hero-visual{position:relative}
+  .device-card{position:relative;background:linear-gradient(160deg,#fff,#f4f5f9);border:1px solid var(--line);border-radius:26px;padding:42px;box-shadow:0 40px 80px -30px rgba(19,24,58,.3)}
+  .device{width:100%;max-width:270px;margin:0 auto;aspect-ratio:13.4/15.8;background:linear-gradient(150deg,#1d1d22,#0c0c10);border-radius:14px;border:5px solid #f2f2f4;position:relative;box-shadow:0 24px 50px -18px rgba(0,0,0,.55);background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.018) 0 2px,transparent 2px 5px),linear-gradient(150deg,#1d1d22,#0c0c10)}
+  .device .screen{position:absolute;left:14%;top:12%;width:54%;height:76%;background:linear-gradient(165deg,#2b2f63,#171a3c);border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:14px;box-shadow:inset 0 0 30px rgba(0,0,0,.4)}
+  .device .screen .sk-mark{display:flex;align-items:center;justify-content:center}
+  .device .screen .sk-mark svg{display:block}
+  .device .screen .sk-sub{font-size:9.5px;color:#aab0e6;margin-top:8px;line-height:1.4}
+  .device .screen .sk-btn{margin-top:14px;background:#d8a13a;color:#1a1206;font-size:10px;font-weight:700;padding:7px 18px;border-radius:5px;letter-spacing:.05em}
+  .device .slot{position:absolute;right:8%;top:18%;width:7%;height:64%;background:linear-gradient(180deg,#d6d8df,#9a9da8);border-radius:4px;box-shadow:inset 0 0 6px rgba(0,0,0,.4)}
+  .device .slot:after{content:"";position:absolute;left:25%;top:8%;width:50%;height:30%;background:#1a1a1f;border-radius:2px}
+  .device .billslot{position:absolute;left:18%;bottom:5%;width:46%;height:9%;background:#0a0a0d;border:2px solid #d6d8df;border-radius:4px}
+  .hero-stat{position:absolute;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;box-shadow:0 18px 40px -16px rgba(19,24,58,.28)}
+  .hero-stat .num{font-family:'Archivo';font-weight:800;font-size:24px}
+  .hero-stat .lbl{font-size:11px;color:var(--slate-light);font-weight:500;letter-spacing:.04em}
+  .hs-1{top:-14px;right:-10px}
+  .hs-2{bottom:-16px;left:-18px}
+
+  /* SECTIONS */
+  section{padding:96px 0}
+  .sec-head{max-width:660px;margin-bottom:50px}
+  .sec-tag{font-size:12.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:block}
+  .sec-head h2{font-size:clamp(30px,4vw,46px);font-weight:800;margin-bottom:18px}
+  .sec-head p{font-size:18px;color:var(--slate)}
+
+  /* WHAT IT IS */
+  .whatis{background:var(--navy);color:#fff}
+  .whatis .grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+  .whatis .sec-tag{color:#b99bff}
+  .whatis h2{color:#fff;font-size:clamp(30px,4vw,46px);font-weight:800;margin-bottom:22px}
+  .whatis p{font-size:18.5px;color:#c5c9e0;margin-bottom:26px;max-width:480px}
+  .whatis .applic{display:grid;gap:13px}
+  .whatis .applic .a{display:flex;gap:13px;align-items:center;font-size:16px;color:#e6e8f4}
+  .whatis .applic .a .tk{flex-shrink:0;width:24px;height:24px;border-radius:7px;background:rgba(123,47,247,.22);display:flex;align-items:center;justify-content:center}
+  .whatis .applic .a .tk svg{width:13px;height:13px;stroke:#c9a8ff;stroke-width:3}
+  .whatis-visual{display:flex;justify-content:center}
+  .whatis-visual .device-card{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1)}
+
+  /* HOW */
+  .how-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .step-card{position:relative;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:34px 30px;transition:transform .25s,box-shadow .25s,border-color .25s}
+  .step-card:hover{transform:translateY(-5px);box-shadow:0 26px 50px -24px rgba(19,24,58,.3);border-color:transparent}
+  .step-card .n{font-family:'Archivo';font-weight:800;font-size:15px;color:var(--accent);background:var(--accent-soft);width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:22px}
+  .step-card h3{font-size:20px;font-weight:700;margin-bottom:10px}
+  .step-card p{font-size:15px;color:var(--slate)}
+  .flow-diagram{display:flex;align-items:center;justify-content:center;margin-top:52px;flex-wrap:wrap}
+  .flow-node{text-align:center;padding:0 6px}
+  .flow-node .chip{width:104px;height:104px;border-radius:22px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:14px;border:1px solid var(--line)}
+  .flow-node .chip svg{width:30px;height:30px}
+  .flow-node.cash .chip{background:var(--paper-alt);color:var(--ink)}
+  .flow-node.cash .chip svg{stroke:var(--slate)}
+  .flow-node.kiosk .chip{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .flow-node.kiosk .chip svg{stroke:#fff}
+  .flow-node.digital .chip{background:linear-gradient(140deg,var(--accent),var(--accent-2));color:#fff;border:none}
+  .flow-node.digital .chip svg{stroke:#fff}
+  .flow-node .cap{margin-top:12px;font-size:13px;color:var(--slate-light);font-weight:500}
+  .flow-arrow{margin:0 14px;flex-shrink:0}
+  .flow-arrow svg{width:46px;height:24px;stroke:var(--accent);opacity:.5}
+  .biz-line{margin-top:48px;background:var(--paper-alt);border:1px solid var(--line);border-radius:14px;padding:22px 26px;display:flex;gap:14px;align-items:flex-start;max-width:700px;margin-left:auto;margin-right:auto}
+  .biz-line svg{width:22px;height:22px;stroke:var(--accent);flex-shrink:0;margin-top:2px}
+  .biz-line p{font-size:15.5px;color:var(--slate)}
+  .biz-line b{color:var(--ink);font-weight:600}
+  @media(max-width:760px){.flow-arrow{transform:rotate(90deg);margin:8px 0}}
+
+  /* PLATFORM */
+  .platform{background:var(--navy-deep);color:#fff;overflow:hidden}
+  .platform .grid{display:grid;grid-template-columns:.92fr 1.08fr;gap:60px;align-items:center}
+  .platform .sec-tag{color:#b99bff}
+  .platform h2{color:#fff;font-size:clamp(30px,4vw,46px);font-weight:800;margin-bottom:18px}
+  .platform p.lead{font-size:17px;color:#bcc0d8;margin-bottom:32px}
+  .spec-block{margin-bottom:26px}
+  .spec-block h4{font-size:13px;text-transform:uppercase;letter-spacing:.12em;color:#b99bff;margin-bottom:14px;font-family:'Spline Sans';font-weight:700}
+  .spec-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .spec{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:12px;padding:14px 16px;display:flex;gap:11px;align-items:center}
+  .spec svg{width:18px;height:18px;stroke:#c9a8ff;flex-shrink:0}
+  .spec span{font-size:14px;font-weight:500;color:#e6e8f4}
+  .spec-meta{display:flex;gap:40px;flex-wrap:wrap;margin-top:6px}
+  .spec-meta .m .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:#7f86a8;margin-bottom:6px}
+  .spec-meta .m .val{font-size:16px;color:#e6e8f4;font-weight:500}
+  .platform-visual{display:flex;justify-content:center}
+  .pv-card{background:linear-gradient(160deg,rgba(255,255,255,.06),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:24px;padding:44px;width:100%;display:flex;justify-content:center}
+
+  /* DEMO */
+  .demo{padding:104px 0}
+  .demo-card{background:linear-gradient(135deg,var(--accent),var(--accent-2));border-radius:30px;padding:64px;color:#fff;position:relative;overflow:hidden}
+  .demo-card:before{content:"";position:absolute;right:-80px;top:-80px;width:340px;height:340px;border-radius:50%;background:rgba(255,255,255,.08)}
+  .demo-card:after{content:"";position:absolute;left:-60px;bottom:-100px;width:260px;height:260px;border-radius:50%;background:rgba(255,255,255,.06)}
+  .demo-grid{position:relative;z-index:2;display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center}
+  .demo-copy .sec-tag{color:rgba(255,255,255,.85)}
+  .demo-copy h2{font-size:clamp(30px,4vw,46px);color:#fff;margin-bottom:18px}
+  .demo-copy p{font-size:18px;color:rgba(255,255,255,.92)}
+  .demo-form{background:#fff;border-radius:20px;padding:34px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;font-weight:600;margin-bottom:7px;color:var(--ink)}
+  .field input,.field textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:13px 15px;font-family:inherit;font-size:15px;color:var(--ink);background:#fff;transition:border-color .2s,box-shadow .2s}
+  .field input:focus,.field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .field textarea{resize:vertical;min-height:90px}
+  .demo-form .btn{width:100%;justify-content:center;margin-top:4px}
+  .form-note{font-size:12px;color:var(--slate-light);text-align:center;margin-top:12px}
+
+  /* FOOTER */
+  footer{background:var(--navy-deep);color:#fff;padding:54px 0 34px}
+  .foot-top{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:24px;padding-bottom:30px;border-bottom:1px solid rgba(255,255,255,.1)}
+  .foot-brand .logo{color:#fff;margin-bottom:12px}
+  .foot-brand .logo .k{background:linear-gradient(120deg,#a86bff,#e056d8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .foot-brand p{font-size:14px;color:#9ea3c2;max-width:340px;line-height:1.6}
+  .foot-nav{display:flex;gap:26px;flex-wrap:wrap}
+  .foot-nav a{font-size:14px;color:#c5c9e0;transition:color .2s}
+  .foot-nav a:hover{color:#fff}
+  .foot-bottom{padding-top:24px;font-size:13px;color:#7f86a8}
+
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  @media(max-width:960px){
+    .hero-grid,.whatis .grid,.platform .grid,.demo-grid{grid-template-columns:1fr;gap:44px}
+    .how-steps{grid-template-columns:1fr}
+    .hero-visual,.whatis-visual{max-width:400px;margin:0 auto}
+    .demo-card{padding:44px 30px}
+  }
+  @media(max-width:560px){
+    .spec-grid{grid-template-columns:1fr}
+    section{padding:68px 0}
+    .wrap{padding:0 20px}
+    .hero{padding:64px 0 44px}
+    .nav-right{gap:14px}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap nav-inner">
+    <div class="logo"><span class="k">k</span>2d<small>kiosk&nbsp;to&nbsp;digital</small></div>
+    <div class="nav-right">
+      <div class="nav-links">
+        <a href="#whatis">Qué es</a>
+        <a href="#how">Cómo funciona</a>
+        <a href="#platform">Plataforma</a>
+        <a href="#demo" class="nav-cta">Agenda una demo</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="reveal in">
+      <span class="eyebrow"><span class="dot"></span>Efectivo a digital, autoservicio</span>
+      <h1>Del efectivo a la <span class="grad-text">oportunidad</span>.</h1>
+      <p class="lead">k2d es un kiosco compacto de autoservicio que convierte efectivo en valor digital al instante, ampliando la capacidad de servicio de una red y conectándose con los sistemas que ya tiene.</p>
+      <div class="hero-ctas">
+        <a href="#demo" class="btn btn-primary">Agenda una demo <span class="arrow">&rarr;</span></a>
+      </div>
+      <p class="built-for">Para cadenas de retail, proveedores de pago, instituciones financieras, servicios públicos y redes que atienden a clientes que usan efectivo.</p>
+    </div>
+    <div class="hero-visual reveal in">
+      <div class="device-card">
+        <div class="device">
+          <div class="screen">
+            <div class="sk-mark">
+              <svg width="84" height="38" viewBox="0 0 84 38" fill="none" aria-label="k2d">
+                <text x="2" y="30" font-family="Archivo,sans-serif" font-weight="800" font-size="32" fill="#fff">k</text>
+                <text x="28" y="30" font-family="Archivo,sans-serif" font-weight="800" font-size="32" fill="url(#km1)" transform="skewX(-9)">2</text>
+                <text x="54" y="30" font-family="Archivo,sans-serif" font-weight="800" font-size="32" fill="#fff">d</text>
+                <defs><linearGradient id="km1" x1="30" y1="8" x2="50" y2="32"><stop stop-color="#a86bff"/><stop offset="1" stop-color="#e056d8"/></linearGradient></defs>
+              </svg>
+            </div>
+            <div class="sk-sub">Inserta efectivo<br>Recibe valor digital</div>
+            <div class="sk-btn">INICIAR</div>
+          </div>
+          <div class="slot"></div>
+          <div class="billslot"></div>
+        </div>
+      </div>
+      <div class="hero-stat hs-1"><div class="num">8&Prime;</div><div class="lbl">Pantalla táctil</div></div>
+      <div class="hero-stat hs-2"><div class="num">API</div><div class="lbl">Integrada</div></div>
+    </div>
+  </div>
+</header>
+
+<!-- WHAT IT IS -->
+<section class="whatis" id="whatis">
+  <div class="wrap">
+    <div class="grid">
+      <div class="reveal">
+        <span class="sec-tag">Qué es</span>
+        <h2>Un dispositivo compacto que convierte efectivo en valor digital.</h2>
+        <p>Convierte efectivo en digital en modalidad autoservicio, aplicable directamente para:</p>
+        <div class="applic">
+          <div class="a"><span class="tk"><svg fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Comprar vales digitales</div>
+          <div class="a"><span class="tk"><svg fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Recargar tarjetas o saldos</div>
+          <div class="a"><span class="tk"><svg fill="none" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg></span>Pagar facturas de servicios</div>
+        </div>
+      </div>
+      <div class="whatis-visual reveal">
+        <div class="device-card">
+          <div class="device" style="max-width:230px">
+            <div class="screen">
+              <div class="sk-mark">
+                <svg width="72" height="33" viewBox="0 0 84 38" fill="none" aria-label="k2d">
+                  <text x="2" y="30" font-family="Archivo,sans-serif" font-weight="800" font-size="32" fill="#fff">k</text>
+                  <text x="28" y="30" font-family="Archivo,sans-serif" font-weight="800" font-size="32" fill="url(#km2)" transform="skewX(-9)">2</text>
+                  <text x="54" y="30" font-family="Archivo,sans-serif" font-weight="800" font-size="32" fill="#fff">d</text>
+                  <defs><linearGradient id="km2" x1="30" y1="8" x2="50" y2="32"><stop stop-color="#a86bff"/><stop offset="1" stop-color="#e056d8"/></linearGradient></defs>
+                </svg>
+              </div>
+              <div class="sk-sub">Selecciona el servicio</div>
+              <div class="sk-btn">INICIAR</div>
+            </div>
+            <div class="slot"></div>
+            <div class="billslot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="sec-tag">Cómo funciona</span>
+      <h2>Inserta, selecciona, recibe.</h2>
+    </div>
+    <div class="how-steps">
+      <div class="step-card reveal"><div class="n">1</div><h3>Inserta efectivo</h3><p>Monedas y/o billetes en el dispositivo.</p></div>
+      <div class="step-card reveal"><div class="n">2</div><h3>Selecciona el servicio</h3><p>En la pantalla táctil.</p></div>
+      <div class="step-card reveal"><div class="n">3</div><h3>Recibe acreditación en tiempo real</h3><p>A través de la plataforma conectada.</p></div>
+    </div>
+
+    <div class="flow-diagram reveal">
+      <div class="flow-node cash">
+        <div class="chip"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>Efectivo</div>
+        <div class="cap">Billetes y monedas</div>
+      </div>
+      <div class="flow-arrow"><svg fill="none" stroke-width="2" viewBox="0 0 46 24"><path d="M2 12h40M34 5l8 7-8 7"/></svg></div>
+      <div class="flow-node kiosk">
+        <div class="chip"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><rect x="8" y="5" width="8" height="9" rx="1"/><path d="M9 18h6"/></svg>Kiosco</div>
+        <div class="cap">k2d</div>
+      </div>
+      <div class="flow-arrow"><svg fill="none" stroke-width="2" viewBox="0 0 46 24"><path d="M2 12h40M34 5l8 7-8 7"/></svg></div>
+      <div class="flow-node digital">
+        <div class="chip"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/><circle cx="18" cy="17" r="2.5"/></svg>Digital</div>
+        <div class="cap">Valor acreditado</div>
+      </div>
+    </div>
+
+    <div class="biz-line reveal">
+      <svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+      <p><b>Para el negocio:</b> opera mediante integración API, con monitoreo remoto y reportería centralizada.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PLATFORM -->
+<section class="platform" id="platform">
+  <div class="wrap">
+    <div class="grid">
+      <div class="reveal">
+        <span class="sec-tag">Especificaciones</span>
+        <h2>Hardware empresarial, hecho para integrarse.</h2>
+        <p class="lead">Diseñado y ensamblado en Santa Tecla, El Salvador.</p>
+        <div class="spec-block">
+          <h4>Hardware</h4>
+          <div class="spec-grid">
+            <div class="spec"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9h6v6H9z"/></svg><span>Gabinete de acero reforzado</span></div>
+            <div class="spec"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 18h6"/></svg><span>Pantalla táctil de 8&Prime;</span></div>
+            <div class="spec"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3M21 21v.01"/></svg><span>Cámara QR integrada</span></div>
+            <div class="spec"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12.55a11 11 0 0 1 14 0M8.5 16a6 6 0 0 1 7 0M2 8.82a15 15 0 0 1 20 0M12 20h.01"/></svg><span>Conectividad WiFi</span></div>
+            <div class="spec"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg><span>Entrada AC universal</span></div>
+            <div class="spec"><svg fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg><span>Integración API</span></div>
+          </div>
+        </div>
+        <div class="spec-meta">
+          <div class="m"><div class="lbl">Capacidad</div><div class="val">~300 billetes &middot; ~600 monedas</div></div>
+          <div class="m"><div class="lbl">Dimensiones</div><div class="val">34 &times; 28 &times; 19.5 cm</div></div>
+        </div>
+      </div>
+      <div class="platform-visual reveal">
+        <div class="pv-card">
+          <div class="device" style="max-width:240px">
+            <div class="screen">
+              <div class="sk-mark">
+                <svg width="76" height="34" viewBox="0 0 84 38" fill="none" aria-label="k2d">
+                  <text x="2" y="30" font-family="Archivo,sans-serif" font-weight="800" font-size="32" fill="#fff">k</text>
+                  <text x="28" y="30" font-family="Archivo,sans-serif" font-weight="800" font-size="32" fill="url(#km3)" transform="skewX(-9)">2</text>
+                  <text x="54" y="30" font-family="Archivo,sans-serif" font-weight="800" font-size="32" fill="#fff">d</text>
+                  <defs><linearGradient id="km3" x1="30" y1="8" x2="50" y2="32"><stop stop-color="#a86bff"/><stop offset="1" stop-color="#e056d8"/></linearGradient></defs>
+                </svg>
+              </div>
+              <div class="sk-sub">Inserta efectivo<br>Recibe valor digital</div>
+              <div class="sk-btn">INICIAR</div>
+            </div>
+            <div class="slot"></div>
+            <div class="billslot"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section class="demo" id="demo">
+  <div class="wrap">
+    <div class="demo-card reveal">
+      <div class="demo-grid">
+        <div class="demo-copy">
+          <span class="sec-tag">Míralo funcionar</span>
+          <h2>Agenda una demo.</h2>
+          <p>Mira un kiosco k2d realizar una transacción de efectivo a digital en vivo, y cómo se conecta con los sistemas existentes.</p>
+        </div>
+        <div class="demo-form">
+          <form onsubmit="event.preventDefault();this.innerHTML='<p style=&quot;text-align:center;padding:30px 10px;font-size:16px;color:#13183a;font-weight:600&quot;>Gracias. Te contactaremos pronto.</p>';">
+            <div class="field"><label>Nombre</label><input type="text" required></div>
+            <div class="field"><label>Organización</label><input type="text" required></div>
+            <div class="field"><label>Correo de trabajo</label><input type="email" required></div>
+            <div class="field"><label>Mensaje</label><textarea></textarea></div>
+            <button type="submit" class="btn btn-primary">Agenda una demo</button>
+            <p class="form-note">Propuesta de concepto. Destino por configurar.</p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-brand">
+        <div class="logo"><span class="k">k</span>2d</div>
+        <p>kiosk to digital. Diseñado y ensamblado en Santa Tecla, El Salvador.</p>
+      </div>
+      <div class="foot-nav">
+        <a href="#whatis">Qué es</a>
+        <a href="#how">Cómo funciona</a>
+        <a href="#platform">Plataforma</a>
+        <a href="#demo">Agenda una demo</a>
+      </div>
+    </div>
+    <div class="foot-bottom">Propuesta de concepto &middot; sobre la plataforma K1 &middot; 2026</div>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
